@@ -5,6 +5,32 @@
 const zones = new Map();
 
 /**
+ * Upsert zone with patch (for video-derived or other updates)
+ */
+function upsertZone(zoneId, patch) {
+  const existing = zones.get(zoneId) || { id: zoneId, densityHistory: [] };
+  const next = {
+    ...existing,
+    ...patch,
+    id: zoneId,
+    densityHistory: existing.densityHistory || [],
+  };
+  zones.set(zoneId, next);
+  return next;
+}
+
+/**
+ * Get zones in format expected by HeatMap/ZoneCard: { id, count, risk }
+ */
+function getZonesForClient() {
+  return Array.from(zones.values()).map((z) => ({
+    id: z.id,
+    count: Number(z.peopleCount ?? z.count ?? 0),
+    risk: Number(z.risk ?? z.riskScore ?? 0),
+  }));
+}
+
+/**
  * Update zone state (called by detector / simulator)
  */
 function updateZone(req, res) {
@@ -21,14 +47,12 @@ function updateZone(req, res) {
     return res.status(400).json({ error: "Invalid zone data" });
   }
 
-  zones.set(id, {
-    id,
+  upsertZone(id, {
     peopleCount,
     zoneArea,
     prevPositions,
     currPositions,
     deltaTime,
-    densityHistory: zones.get(id)?.densityHistory || [],
   });
 
   return res.status(200).json({ message: "Zone updated" });
@@ -52,4 +76,6 @@ module.exports = {
   updateZone,
   getZones,
   getZoneById,
+  upsertZone,
+  getZonesForClient,
 };

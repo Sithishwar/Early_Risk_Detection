@@ -1,5 +1,5 @@
 const express = require("express");
-const { computeRisk } = require("../../controllers/risk.controller");
+const { computeRisk } = require("../controllers/risk.controller");
 
 const router = express.Router();
 

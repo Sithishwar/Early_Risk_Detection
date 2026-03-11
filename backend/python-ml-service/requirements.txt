@@ -4,3 +4,5 @@ opencv-python
 numpy
 tensorflow
 pydantic
+ultralytics
+ultralytics

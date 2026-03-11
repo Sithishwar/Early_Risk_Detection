@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 const zoneRoutes = require("./routes/zone.routes");
 const riskRoutes = require("./routes/risk.routes");
@@ -11,6 +12,11 @@ const app = express();
 /**
  * Core middlewares
  */
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
